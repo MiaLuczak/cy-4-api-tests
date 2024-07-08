@@ -1,19 +1,32 @@
 describe('General httpbin API tests', () => {
+
+  // Test for loading main httpbin page
   it('Get HTML main page', () => {
     cy.request('https://httpbin.org/').then((response) =>
+      // Expects status to be 200 'OK'
       assert.equal(200, response.status)
     );
   });
+
+  // Test for deleyed response option
   it('2s Deleyed response', () => {
     const delay = 2;
     cy.request(`https://httpbin.org/delay/${delay}`).then((response) => {
+      // Expects that response comes after 2s
       expect(response.duration).to.satisfy((duration) => duration >= delay);
     });
   });
 });
 
+// To fix: assertion path to response headers
 describe('Requests formats tests', () => {
+  
+  // Create baseURL address sting
   const baseURL = 'https://httpbin.org';
+
+  // Tests for most used response formats,
+  // creating request constant to provide multiple request options
+  // tests expects, that response headers have matching content-type property with provided header
 
   it('HTML response format', () => {
     const request = {
@@ -22,6 +35,7 @@ describe('Requests formats tests', () => {
       headers: {
         Accept: 'text/html',
       },
+      failOnStatusCode: false,
     };
     cy.request(request).then((response) => {
       expect(response.headers).to.have.property('content-type');
@@ -38,6 +52,7 @@ describe('Requests formats tests', () => {
       headers: {
         Accept: 'application/json',
       },
+      failOnStatusCode: false
     };
     cy.request(request).then((response) => {
       expect(response.headers).to.have.property('content-type');
@@ -54,6 +69,7 @@ describe('Requests formats tests', () => {
       headers: {
         Accept: 'application/xml',
       },
+      failOnStatusCode: false
     };
     cy.request(request).then((response) => {
       expect(response.headers).to.have.property('content-type');
@@ -64,13 +80,21 @@ describe('Requests formats tests', () => {
   });
 });
 
+// To fix: assertion in 'Get list of current cookies' test / assert that cookies are provided
+// To fix: assertion in 'Delete cookies' test / assert that deleted cookies dont exist
 describe('Cookies API tests', () => {
+  // Create constatnt baseURL address string:
   const baseURL = 'https://httpbin.org/';
+
+  // Test, that gets current active cookies
   it('Get list of current cookies', () => {
     cy.request(`${baseURL}/cookies`).then((response) => {
+      // Asserts that response is 200 'OK', as there is possibility to response have no cookies :c 
       assert.equal(200, response.status);
     });
   });
+
+  // Test, that creates custom cookie
   it('Create new cookie', () => {
     const newCookieName = 'wafer';
     const request = {
@@ -81,9 +105,12 @@ describe('Cookies API tests', () => {
     };
     cy.request(request).then((response) => {
       const data = response.body;
+      // Expects to response body have created property in cookies
       expect(data.cookies).to.have.property('freeform', newCookieName);
     });
   });
+
+  // Test, that validates deletion all created cookies
   it('Delete cookies', () => {
     const request = {
       method: 'GET',
@@ -95,8 +122,10 @@ describe('Cookies API tests', () => {
 });
 
 describe('HTTP Methods - Happy path tests', () => {
+  // Create baseURL address sting
   const baseURL = 'https://httpbin.org/';
 
+  // Tests for every HTTP method
   it('GET HTTP Method', () => {
     const request = {
       method: `GET`,
@@ -150,8 +179,10 @@ describe('HTTP Methods - Happy path tests', () => {
 });
 
 describe('HTTP Methods - Negative path tests', () => {
+  // Create baseURL address sting
   const baseURL = 'https://httpbin.org/';
 
+  // Tests for every HTTP method, using missmatched HTTP method with API endpoint
   it('GET Endpoint - Missmatched HTTP Method', () => {
     const request = {
       method: `POST`,
@@ -204,14 +235,19 @@ describe('HTTP Methods - Negative path tests', () => {
   });
 });
 
+// To fix: assertion in tests / move deeper in object path
 describe('user-agent tests', () => {
+  // Create baseURL address sting
   const baseURL = 'https://httpbin.org/';
+
+  // Test, that validate if user-agent property is in response header
   it('Current user-agent header', () => {
     cy.request(`${baseURL}/user-agent`).then((response) =>
       expect(response.body).to.have.property('user-agent')
     );
   });
 
+  // Test, that provide valid custom user-agent, and validates it in response body
   it('Provide custom valid user-agent header', () => {
     const request = {
       method: 'GET',
@@ -230,6 +266,7 @@ describe('user-agent tests', () => {
     });
   });
 
+  // Test, that provide custom user-agent, and validates it in response body
   it('Provide custom user-agent header', () => {
     const request = {
       method: 'GET',
@@ -247,9 +284,11 @@ describe('user-agent tests', () => {
   });
 });
 
-describe.only('headers tests', () => {
+describe('headers tests', () => {
+  // Create baseURL address string:
   const baseURL = 'https://httpbin.org/';
 
+  // Test, that validates that headers are recived in response
   it('Get current headers', () => {
     const request = {
       method: 'GET',
@@ -260,6 +299,7 @@ describe.only('headers tests', () => {
     });
   });
 
+  // Test, that provide custom header, and validate it in response
   it('Provide custom headers', () => {
     const request = {
       method: 'GET',
