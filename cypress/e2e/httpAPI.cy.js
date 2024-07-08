@@ -246,3 +246,37 @@ describe('user-agent tests', () => {
     });
   });
 });
+
+describe.only('headers tests', () => {
+  const baseURL = 'https://httpbin.org/';
+
+  it('Get current headers', () => {
+    const request = {
+      method: 'GET',
+      url: `${baseURL}/headers`,
+    };
+    cy.request(request).then((response) => {
+      expect(response.body.headers).to.not.be.empty;
+    });
+  });
+
+  it('Provide custom headers', () => {
+    const request = {
+      method: 'GET',
+      url: `${baseURL}/headers`,
+      headers: {
+        'my-custom-header': 'my-custom-value',
+      },
+    };
+    cy.request(request).then((response) => {
+      expect(response.requestHeaders).to.have.property(
+        'my-custom-header',
+        request.headers['my-custom-header']
+      );
+      expect(response.body.headers).to.have.property(
+        'My-Custom-Header',
+        request.headers['my-custom-header']
+      );
+    });
+  });
+});
