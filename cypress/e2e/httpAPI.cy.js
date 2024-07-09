@@ -18,7 +18,6 @@ describe('General httpbin API tests', () => {
   });
 });
 
-// To fix: assertion path to response headers
 describe('Requests formats tests', () => {
   
   // Create baseURL address sting
@@ -80,8 +79,6 @@ describe('Requests formats tests', () => {
   });
 });
 
-// To fix: assertion in 'Get list of current cookies' test / assert that cookies are provided
-// To fix: assertion in 'Delete cookies' test / assert that deleted cookies dont exist
 describe('Cookies API tests', () => {
   // Create constatnt baseURL address string:
   const baseURL = 'https://httpbin.org/';
@@ -90,7 +87,7 @@ describe('Cookies API tests', () => {
   it('Get list of current cookies', () => {
     cy.request(`${baseURL}/cookies`).then((response) => {
       // Asserts that response is 200 'OK', as there is possibility to response have no cookies :c 
-      assert.equal(200, response.status);
+      expect(response.body).to.have.ownProperty('cookies');
     });
   });
 
@@ -117,7 +114,9 @@ describe('Cookies API tests', () => {
       url: `${baseURL}/cookies/delete`,
       failOnStatusCode: false,
     };
-    cy.request(request).then((response) => assert.ok(response.status));
+    cy.request(request).then((response) => {
+      expect(response.body.cookies).to.not.have.property('freeform')
+    });
   });
 });
 
@@ -235,7 +234,6 @@ describe('HTTP Methods - Negative path tests', () => {
   });
 });
 
-// To fix: assertion in tests / move deeper in object path
 describe('user-agent tests', () => {
   // Create baseURL address sting
   const baseURL = 'https://httpbin.org/';
