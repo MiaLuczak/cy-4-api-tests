@@ -14,10 +14,6 @@ The main goal was to make an automated tests, that uses public free API
 
   > npm package </br> [Link to package](https://www.npmjs.com/package/cypress)
 
-- http-server
-
-  > npm package </br> [Link to package](https://www.npmjs.com/package/http-server)
-
 ## <p align="center">Files info</p>
 
 - [httpAPI.cy.js](./cypress/e2e/httpAPI.cy.js)
